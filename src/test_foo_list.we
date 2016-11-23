@@ -1,0 +1,14 @@
+<template>
+  <foo_list lists="{{listss}}" style="{height: 1800; width: 1600;}"></foo_list>
+</template>
+<script>
+  module.exports = {
+    data: {
+      listss: [
+        {text: 'A', img: 'http://t.cn/RGE31hq'},
+        {text: 'B', img: 'http://t.cn/RGE3uo9'},
+        {text: 'C', img: 'http://t.cn/RGE3AJt'},
+      ]
+    }
+  }
+</script>

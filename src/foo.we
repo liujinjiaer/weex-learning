@@ -1,0 +1,14 @@
+<template>
+  <container style="{height: 800; width: 400; flex-direction: column;}" >
+    <image style="width: 200; height: 200;"  src="{{fooimage}}"></image>
+    <text>{{footitle}}</text>
+  </container>
+</template>
+<script>
+  module.exports = {
+    data: {
+      footitle: null,
+      fooimage: null
+    }
+  }
+</script>

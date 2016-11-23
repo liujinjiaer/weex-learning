@@ -1,0 +1,168 @@
+<!--
+    Weex页面页面由<template>,<style>,<script>三个部分构成。
+    <template>: 必须的, 使用类HTML的语法描述页面结构，内容由多个标签组成，不同的标签代表不同的组件。
+    <style>: 可选的, 使用类CSS的语法描述页面的具体展现形式。
+    <script>: 可选的 , 使用JavaScript描述页面中的数据和页面的行为，Weex中的数据定义也在<script>中进行。
+-->
+<template>
+  <container>
+    <image style="width: 200; height: 200;" src="http://gtms02.alicdn.com/tps/i2/TB1QHKjMXXXXXadXVXX20ySQVXX-512-512.png"></image>
+    <text style="font-size:32;">Alibaba Weex Team</text>
+    <text class="large">Android weex</text>
+    <text>The time is {{datetime}}</text>
+    <text>{{title}}</text>
+    <text>{{getTitle()}}</text>
+    <text>{{fullName}}</text>
+    <text onclick="changeName">click me!</text>
+    <text style="font-size: {{size};color:#FFEE99">{{dbtitle}}</text>
+    <image class="thumb" src="http://t.cn/RGE3uo9" if="{{shown}}"></image>
+    <text onclick="toggle">Toggle</text>
+    <div static>
+    <text>{{ word }}</text>
+  </div>
+  <text class="ctitle">Class Title Test</text>
+  <text class="ctitle chighlight">Class Title Test && HighLight</text>
+  <container>
+    <text id="top">Top</text>
+    <container style="height: 1000; background-color: #999999;">
+    </container>
+    <text onclick="back2Top">Back to Top</text>
+  </container>
+  <container>
+      <image id="{{imgId}}" src="{{imgUrl}}" onclick="getImageId" repeat="{{images}}" style="width: 200; height: 200;"></image>
+    </container>
+  </container>
+</template>
+<!--  每个 template 标签中的最顶层标签，我们称为根节点:
+      container: 普通根节点
+      scroller: 滚动器根节点,适用于需要全页滚动的场景
+      list: 列表根节点,适用于其中包含重复的子元素的列表场景
+-->
+
+<!--  style  -->
+<!--
+    style可以理解为CSS的子集，有以下两种写法：
+    <template>中标签的style属性,直接通过内联style属性编写样式: eg: <container style="width: 400; height: 50;">
+    <style> 中样式表,通过标签中的class属性与style标签中定义的样式建立对应关系，让style标签中定义的样式作用于特定标签之上,
+    每条规则有一个对应的类, 以及由{...}包括的多条样式,eg：.title {width: 400; height: 50;}
+-->
+<style>
+.large {font-size:32;}
+.thumb { width: 200; height: 200; }
+.ctitle {width:800;height:50}
+.chighlight {color: red}
+</style>
+<!--  weex遵循HTML规范，所以属性不要使用驼峰格式  -->
+
+<!--  script -->
+<!--
+    遵循 JavaScript(ES5)语法. 描述页面中的数据和页面的行为
+-->
+<script>
+var dom = require('@weex-module/dom');
+module.exports = {
+    data:{title:'script title', 
+            datetime:null,
+            size:32, 
+            dbtitle:'Data binding',
+            firstName: 'John',
+            lastName: 'Smith',
+            computedFlag:null,
+            shown: true,
+            word:'Hello, static',
+            images: [
+                {imgId: 1, imgUrl: 'http://t.cn/RGE31hq'},
+                {imgId: 2, imgUrl: 'http://t.cn/RGE3uo9'},
+                {imgId: 3, imgUrl: 'http://t.cn/RGE3AJt'},
+      ]
+    },
+    computed:{
+        fullName:{
+            get:function(){
+                return this.firstName + " " + this.lastName
+            },
+            set:function(v){
+                var s = v.split(' ');
+                this.firstName = s[0];
+                this.lastName = s[1];
+            }
+        }
+    },
+    methods:{getTitle:function(){
+                return 'learn weex from github repo'
+            },
+            changeName:function(){
+                console.log('computedFlag:' + this.computedFlag);
+                this.computedFlag = !this.computedFlag;
+                this.fullName = this.computedFlag ? "Hello world" : "John Smith"
+            },
+            toggle:function(){
+                this.shown = !this.shown;
+            },
+            back2Top: function(){
+                var top = this.$el('top');
+                dom.scrollToElement(top, {offset: 10});
+            },
+            getImageId: function(e) {
+                console.log(e.target.id);
+            }
+    },
+    created:function(){
+        this.datetime = new Date().toLocaleString();
+        this.computedFlag = false;
+    },
+    ready:function(){
+        this.word = "static data changes";
+    },
+}
+</script>
+
+<!--  数据绑定  -->
+<!--   
+    {{...}}来对<template>中的模板和<script>里的数据进行绑定. 一旦数据额模板绑定了, 数据上的修改会实时的在模板内容中生效.
+    单个表达式可以直接在{{表达式}}进行演算,比如{{'hello' + ' world'}}
+    如果需要在template实现更多的逻辑判断可以使用computed property
+    data 和 methods 不能有重复的字段. 因为在执行的上下文中 -- this, 能同时指向这两者
+-->
+
+<!--  if & repeat  -->
+<!--  当你修改 data 中的数组时，在写法上会受到一定的限制
+
+    直接通过 index 修改数组的某个项目 (如 vm.items[0] = {};) 
+ 是不会触发视图自动更新的。我们在数组的原型上提供了一个额外的方法：$set(index, item).
+    直接通过修改 length 来改变数组长度 (如 vm.items.length = 0) 
+也是不会触发视图自动更新的。我们推荐您直接赋值一个新的空数组把旧的替换掉。
+
+-->
+
+<!-- static -->
+<!--
+    static 属性可以取消数据绑定机制，从而数据更新不会再同步到UI界面,设计的目的是为了降低长列表、纯静态页面的内存开销。小心的使用它，因为它可能会中断你的页面逻辑。
+
+-->
+
+<!--  class  -->
+<!--
+
+    多个属性值之间由空格分隔. 
+    为了简化页面设计和实现, 屏幕的宽度统一为750像素, 不同屏幕会按照比例转化为这一尺寸.
+    标准CSS支持很多样式选择器, 但Weex目前只支持单个类的选择器.
+    标准CSS支持很多的长度单位,Weex目前只支持像素,并且px在样式中可以忽略不写, 直接使用对应的数值
+    子元素的样式不会继承自父元素, 这一点与标准CSS不同, 比如color和font-size等属性.
+    标准CSS包含了非常多的样式属性, 但Weex只支持了其中的一部分, 包括盒模型,flexbox,position等布局属性. 以及font-size, 
+color等样式.
+
+-->
+
+<!--  组件封装  -->
+<!--
+    见foo.we、foo_list.we、test_foo.we、test_foo_list.we。
+    每个封装好的组件都有一个独立的<style>
+    如果子组件有 id 属性，可以通过this.$vm(id)来访问子组件的上下文，并可以通过this.$el(id)来找节点,请见下文。
+    只有在 data 选项中明确写明的 key 才会被数据监听，不论是基于上层数据传递下来的场景还是内部修改数据。
+-->
+
+<!--  找节点 -->
+<!--
+    可以通过this.$vm(id)来访问子组件的上下文，并可以通过this.$el(id)来找节点,请查看上面的template代码进行查看
+-->

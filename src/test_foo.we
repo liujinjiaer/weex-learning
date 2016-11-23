@@ -1,0 +1,3 @@
+<template>
+  <foo footitle="foo test" fooimage="http://t.cn/RGE3AJt" style="{height: 800; width: 400;}"></foo>
+</template>

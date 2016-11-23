@@ -1,0 +1,15 @@
+<template>
+  <container style="{height: 1800; width: 1600;}"></>
+    <text>{{description}}</text>
+    <foo repeat="{{lists}}" footitle="{{text}}" fooimage="{{img}}" style="{height: 400; width: 300;}"></foo>
+  </container>
+</template>
+<script>
+  module.exports = {
+    data: {
+      description: 'foo list test...',
+      // 因为上层组件会通过 list 向下传递数据，所以这里需要把字段明确写好
+      lists: [],
+    }
+  }
+</script>
